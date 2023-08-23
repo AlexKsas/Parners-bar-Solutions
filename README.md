@@ -1,1 +1,1 @@
-# Partner-Pro-Solutions
+# Parners-Pro-Solutions
