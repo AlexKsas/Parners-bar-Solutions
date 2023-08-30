@@ -13,6 +13,8 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -64,6 +66,12 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
+      <TouchableOpacity>
+        <Text>iniciar</Text>
+      </TouchableOpacity>
+      <TextInput>
+
+      </TextInput>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
