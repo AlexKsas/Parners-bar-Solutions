@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, } from 'react-native';
 import Register from './components/Register/register';
+import Login from './components/Login/login';
 
 const App = () => {
 
@@ -8,6 +9,7 @@ const App = () => {
     <View>
       <Text>Hola mundo</Text>
       <Register/>
+      <Login/>
     </View>
   );
 
