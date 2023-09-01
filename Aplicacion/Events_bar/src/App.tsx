@@ -3,16 +3,20 @@ import { Text, View, } from 'react-native';
 import Register from './components/Register/register';
 import Login from './components/Login/login';
 
-const App = () => {
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+const Stack = createNativeStackNavigator();
+
+function App() {
   return (
-    <View>
-      <Text>Hola mundo</Text>
-      <Register/>
-      <Login/>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Register" component={Register} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-
 }
 
 export default App;
