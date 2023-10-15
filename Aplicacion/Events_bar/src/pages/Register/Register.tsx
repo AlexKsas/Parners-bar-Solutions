@@ -1,10 +1,12 @@
-import Datos from "../../components/Register/Datos/Datos"
+import React from "react"
+import Datos from "../../components/register/Datos/Datos"
+import { View, Text } from "react-native"
 
 const Register = () => {
     return (
-        <view>
+        <>
             <Datos />
-        </view>
+        </>
     )
 }
 
