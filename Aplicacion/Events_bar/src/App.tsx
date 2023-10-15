@@ -1,22 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import Login from './components/Login/login';
-import register from './components/register/register';
+import Register from './pages/Register/Register';
 
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={register} />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <React.Fragment>
+          <Register />
+        </React.Fragment>
+
   );
 }
 const styles = StyleSheet.create({
