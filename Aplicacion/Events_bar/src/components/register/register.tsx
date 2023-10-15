@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, Button, TouchableOpacity, ScrollView } from "react-native"
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView } from "react-native";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 const Register = () => {
 
@@ -17,40 +18,41 @@ const Register = () => {
   return (
     <View style={styles.form}>
       <ScrollView>
-      <Text style={styles.label}>Nombre:</Text>
-      <TextInput style={styles.input}
-        placeholder="ingresar nombre"
-        value={nombre}
-        onChangeText={setNombre} />
+      <FontAwesomeIcon icon='user' />
+        <Text style={styles.label}>Nombre:</Text>
+        <TextInput style={styles.input}
+          placeholder="ingresar nombre"
+          value={nombre}
+          onChangeText={setNombre} />
 
-      <Text style={styles.label}>Email:</Text>
-      <TextInput style={styles.input}
-        placeholder="ingresar Email"
-        value={email}
-        onChangeText={setEmail} />
+        <Text style={styles.label}>Email:</Text>
+        <TextInput style={styles.input}
+          placeholder="ingresar Email"
+          value={email}
+          onChangeText={setEmail} />
 
-      <Text style={styles.label}>Telefono:</Text>
-      <TextInput style={styles.input}
-        placeholder="ingresar Telefono"
-        value={telefono}
-        onChangeText={setTelefono} />
+        <Text style={styles.label}>Telefono:</Text>
+        <TextInput style={styles.input}
+          placeholder="ingresar Telefono"
+          value={telefono}
+          onChangeText={setTelefono} />
 
-      <Text style={styles.label}>Tipo de Documento:</Text>
-      <TextInput style={styles.input}
-        placeholder="Seleccionar una opcion"
-        value={tipoDocumento}
-        onChangeText={setTipoDocumento} />
+        <Text style={styles.label}>Tipo de Documento:</Text>
+        <TextInput style={styles.input}
+          placeholder="Seleccionar una opcion"
+          value={tipoDocumento}
+          onChangeText={setTipoDocumento} />
 
-      <Text style={styles.label}>Numero de Documento:</Text>
-      <TextInput style={styles.input}
-        placeholder="ingresar Numero de documento"
-        value={documento}
-        onChangeText={setDocumento} />
+        <Text style={styles.label}>Numero de Documento:</Text>
+        <TextInput style={styles.input}
+          placeholder="ingresar Numero de documento"
+          value={documento}
+          onChangeText={setDocumento} />
 
-      <TouchableOpacity onPress={handleSubmit} style={styles.submit}>
-        <Text style={styles.submitText}>➡️</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity onPress={handleSubmit} style={styles.submit}>
+          <Text style={styles.submitText}>➡️</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   )
 }
@@ -74,7 +76,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    marginLeft:25,
+    marginLeft: 25,
     color: '#FFFFFF'
   },
   submit: {
