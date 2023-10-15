@@ -9,13 +9,20 @@ const Login = () => {
 
             <TextInput placeholderTextColor={"lightgray"} placeholder="USUARIO" style={Desing.input}></TextInput>
             <TextInput placeholderTextColor={"lightgray"} placeholder="CONTRASEÑA" style={Desing.input}></TextInput>
+            
 
             <TouchableOpacity style={Desing.button}>
             <Text style={Desing.buttonText}>Ingresar</Text>
             </TouchableOpacity>
 
+            
+            
             <TouchableOpacity style={Desing.button}>
             <Text style={Desing.buttonText}>Registrar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={Desing.button}>
+            <Text style={Desing.buttonText}>Recuperar Contraseña</Text>
             </TouchableOpacity>
 
         </View>

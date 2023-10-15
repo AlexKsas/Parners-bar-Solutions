@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import Login from './components/Login/login';
 import register from './components/register/register';
-
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
