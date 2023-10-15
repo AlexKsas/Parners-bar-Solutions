@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -93,3 +94,5 @@ const styles = StyleSheet.create({
 });
 
 export default Register
+=======
+>>>>>>> bad0701dc7bb1af282639268d93c621957f65f88

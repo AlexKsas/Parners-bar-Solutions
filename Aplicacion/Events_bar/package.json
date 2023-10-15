@@ -10,8 +10,14 @@
     "test": "jest"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-navigation/native-stack": "^6.9.13",
+=======
+    "@react-navigation/native": "^6.1.8",
+    "@react-navigation/native-stack": "^6.9.14",
+    "axios": "^1.5.1",
+>>>>>>> bad0701dc7bb1af282639268d93c621957f65f88
     "react": "18.2.0",
     "react-native": "0.72.4"
   },
