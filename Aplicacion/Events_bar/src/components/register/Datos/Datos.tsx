@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, Button, TouchableOpacity, ScrollView } from "react-native"
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView } from "react-native"
 
 const Datos = () => {
 
@@ -70,7 +69,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#92B4EC',
     padding: 16,
     justifyContent: "center",
-    alignItems: 'center'
+    alignItems: 'center',
   },
   label: {
     fontSize: 20,
