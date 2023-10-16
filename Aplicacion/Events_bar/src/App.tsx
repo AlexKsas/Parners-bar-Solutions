@@ -13,7 +13,6 @@ function App() {
       <Establecimiento />
       {/* <Inicio/> */}
     </React.Fragment>
-
   );
 }
 const styles = StyleSheet.create({
