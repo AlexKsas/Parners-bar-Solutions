@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView } from "react-native"
 
@@ -9,7 +10,13 @@ const Datos = () => {
   const [tipoDocumento, setTipoDocumento] = useState('')
   const [documento, setDocumento] = useState('')
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    let url = 'http://localhost:8000/registro/'
+    const res = await axios.post(url,{
+      "usuario":"usuario",
+      "contrasena":"123456789"
+    })
+    console.log("res ", res)
     Alert.alert(`${nombre}, ${email}, ${telefono}, ${tipoDocumento}, ${documento}`)
   }
 
@@ -89,4 +96,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Datos
+export default Datos;
