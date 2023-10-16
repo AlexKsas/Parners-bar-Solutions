@@ -1,23 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, } from 'react-native';
 import Login from './components/Login/login';
-<<<<<<< HEAD
-import register from './components/register/register';
+import Register from './pages/Register/Register';
+import Datos from './components/register/Datos/Datos'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
-=======
-import Register from './pages/Register/Register';
-
-
->>>>>>> 84e97d621a65fbe1962df44b6e7800b6529e3ad0
 
 function App() {
   return (
-        <React.Fragment>
-          <Register />
-        </React.Fragment>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="registra" component={Register} options={{ headerShown: false }}/>
+      </Stack.Navigator>
+  </NavigationContainer>
 
   );
 }

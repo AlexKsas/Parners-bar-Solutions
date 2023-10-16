@@ -1,10 +1,10 @@
-import Datos from "../../components/Register/Datos/Datos"
+import { View, Text } from "react-native"
+import Datos from "../../components/register/Datos/Datos"
+
 
 const Register = () => {
     return (
-        <view>
-            <Datos />
-        </view>
+        <Datos />
     )
 }
 
