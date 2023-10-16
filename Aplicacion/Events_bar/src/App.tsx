@@ -10,7 +10,7 @@ function App() {
   return (
     <React.Fragment>
       {/* <Persona /> */}
-      <Establecimiento />
+      <Login />
       {/* <Inicio/> */}
     </React.Fragment>
   );
