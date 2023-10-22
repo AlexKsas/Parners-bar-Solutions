@@ -12,7 +12,7 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="registra" component={Register} options={{ headerShown: false }}/>
+        <Stack.Screen name="registra" component={Login} options={{ headerShown: false }}/>
       </Stack.Navigator>
   </NavigationContainer>
 
