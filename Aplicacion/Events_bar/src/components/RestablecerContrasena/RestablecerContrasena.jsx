@@ -42,6 +42,7 @@ function RestablecerContrasena() {
         <TextInput
           style={styles.input}
           placeholder="Correo Electrónico"
+          placeholderTextColor={'gray'}
           value={email}
           onChangeText={text => setEmail(text)}
         />
@@ -63,6 +64,7 @@ function RestablecerContrasena() {
       fontSize: 24,
       fontWeight: 'bold',
       marginBottom: 20,
+      color:'gray'
     },
     input: {
       width: '80%',
