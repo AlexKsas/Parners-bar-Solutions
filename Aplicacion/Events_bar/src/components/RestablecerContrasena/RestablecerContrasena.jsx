@@ -53,6 +53,7 @@ function RestablecerContrasena() {
   }
   
   export default RestablecerContrasena;
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -74,6 +75,7 @@ function RestablecerContrasena() {
       borderRadius: 5,
       paddingLeft: 10,
       marginBottom: 10,
+      color:'black'
     },
     message: {
       color: 'red',

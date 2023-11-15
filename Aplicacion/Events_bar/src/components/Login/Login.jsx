@@ -9,7 +9,6 @@ function Login (){
     const navigation = useNavigation();
     return(
         <View style={Desing.inicio}>
-
             <Text style={[Desing.text, styles.title]}>Ingresar Usuario</Text>
                 <TextInput placeholderTextColor={"lightgray"} placeholder="USUARIO" style={Desing.input} underlineColorAndroid="transparent"/>
                 <TextInput placeholderTextColor={"lightgray"} placeholder="CONTRASEÑA" style={Desing.input} 
@@ -23,7 +22,7 @@ function Login (){
 
             <TouchableOpacity style={Desing.button} onPress={() => navigation.navigate('Inicio')}>
                 <Text style={Desing.buttonText}>Entrar</Text>
-            </TouchableOpacity>           
+            </TouchableOpacity>
             
             <TouchableOpacity style={Desing.button} onPress={() => navigation.navigate("InicioRegistrar")}>
                 <Text style={Desing.buttonText}>Registrar</Text>

@@ -2,6 +2,8 @@ import React from 'react'
 import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 
+
+
 function Inicio (){
     const navigation = useNavigation();
     
@@ -42,7 +44,8 @@ const styles = StyleSheet.create({
         marginBottom: 80 
     },
     title: {
-        fontSize: 50,
+        fontSize: 30,
+        textAlign:'center',
         fontWeight: 'bold',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -58,4 +61,5 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Inicio
+
+export default Inicio;
