@@ -9,6 +9,7 @@ import Home from './components/Home/Home';
 import Login from './components/Login/Login';
 import RestablecerContrasena from './components/RestablecerContrasena/RestablecerContrasena';
 import Menu from './menu/Menu';
+import InicioUser from './components/Inicio/InicioUser';
 
 
 
@@ -24,6 +25,7 @@ function App() {
         <Stack.Screen name="RegistrarEstablecimiento" component={Establecimiento} options={{headerTitle:"Establecimiento"}} />
         <Stack.Screen name="Inicio" component={Menu} options={{headerShown:false}} />
         <Stack.Screen name="RestablecerContrasena" component={RestablecerContrasena} options={{headerTitle:"Restablecer Contraseña"}} />
+        <Stack.Screen name="InicioUser" component={InicioUser} options={{headerTitle:"Inicio Usuario"}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

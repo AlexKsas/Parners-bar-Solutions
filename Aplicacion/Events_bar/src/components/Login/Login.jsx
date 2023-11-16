@@ -28,6 +28,10 @@ function Login (){
                 <Text style={Desing.buttonText}>Registrar</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={Desing.button} onPress={() => navigation.navigate("InicioUser")}>
+                <Text style={Desing.buttonText}>Inicio</Text>
+            </TouchableOpacity>
+
 
         </View>
     )
