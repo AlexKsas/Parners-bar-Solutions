@@ -103,12 +103,15 @@ const InicioUser = () => {
         eventName: {
             fontSize: 20,
             fontWeight: 'bold',
+            color:'gray'
         },
         eventLocation: {
             fontSize: 16,
+            color:'gray'
         },
         eventDate: {
             fontSize: 16,
+            color:'gray'
         },
     })
 

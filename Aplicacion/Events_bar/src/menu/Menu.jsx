@@ -1,13 +1,13 @@
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Home from '../components/Home/Home';
 import Perfil from '../components/Perfil/Perfil';
-
+import SubMenu from './SubMenu'
 const Drawer = createDrawerNavigator();
 
 function Menu() {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="Inicio" component={Home} />
+      <Drawer.Screen name="Inicio" component={SubMenu} />
       <Drawer.Screen name="Perfil" component={Perfil} />
     </Drawer.Navigator>
   );
