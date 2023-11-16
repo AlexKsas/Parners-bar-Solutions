@@ -28,26 +28,32 @@ const Desing = StyleSheet.create({
       marginBottom: 20,
     },
     button: {
-      backgroundColor: 'white',
+      backgroundColor: 'transparent', // Color de fondo transparente
       padding: 10,
-      borderRadius: 5,
-      margin:25,
-    
+      borderRadius: 40,
+      margin: 15,
+      elevation: 5, // Agrega elevación para dar un aspecto de relieve en dispositivos Android
+      shadowColor: 'rgba(255, 100, 0, 0.8)', // Color de sombra
+      shadowOffset: { width: 0, height: 3 }, // Desplazamiento de sombra (eje X, eje Y)
+      shadowRadius: 5, // Radio de la sombra
+      shadowOpacity: 0.5, // Opacidad de la sombra
     },
     buttonText: {
-      color: 'white',
+      color: 'rgba(255, 100, 0, 0.8)', // Color de texto en azul
       textAlign: 'center',
-      fontSize: 16, // Tamaño de fuente
-      fontWeight: 'bold', // Peso de fuente (negrita)
-      textTransform: 'uppercase', // Transformación de texto a mayúsculas
-      padding: 10, // Espaciado interno
-      backgroundColor: 'blue', // Color de fondo
-      borderRadius: 5, // Bordes redondeados
+      fontSize: 16,
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      padding: 10,
+      borderRadius: 40,
+      backgroundColor: 'white', // Color de fondo blanco
     },
+    
     container: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: 'darkslateblue'
     }
   });
 
