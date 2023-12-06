@@ -2,9 +2,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+#Modelos 
 
 class Asistencia(models.Model):
+    
     id = models.CharField(max_length=10, primary_key=True)
     idEstablecimiento = models.CharField(max_length=10)
     idPersona = models.CharField(max_length=10)
@@ -18,6 +19,24 @@ class User(AbstractUser):
     
     cedula = models.CharField(max_length=15)
     celular = models.CharField(max_length=15)
+
+    def __str__(self):
+        return f"{self.cedula} - {self.celular}"
+    
+    
+class Establecimientos(models.Model):
+
+    id = models.CharField(max_length=10, primary_key=True)
+    NombreEstablecimiento = models.CharField(max_length=10)
+    Latitud = models.CharField(max_length=10)
+    Longitud = models.CharField(max_length=10)
+    idHorario = models.CharField(max_length=10)
+
+    def __str__(self):
+        return f"{self.id} - {self.NombreEstablecimiento} - {self.Latitud} - {self.Longitud} - {self.idHorario}"
+
+
+
 
 
 
