@@ -1,15 +1,10 @@
 import React from "react";
-<<<<<<< Updated upstream
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-
-const Profile = () => {
-=======
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
-const Perfil = () => {
+
+const Profile = () => {
   const navigation = useNavigation();
->>>>>>> Stashed changes
   return (
     <ScrollView style={styles.container}>
       <Image
@@ -27,12 +22,9 @@ const Perfil = () => {
         <Text style={styles.summaryText}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
         </Text>
-<<<<<<< Updated upstream
-=======
-        <TouchableOpacity style={styles.cerrarsesions} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.sectionTitlec}>Cerrar Sesion</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.infoText}>Cerrar Session</Text>
         </TouchableOpacity>
->>>>>>> Stashed changes
       </View>
     </ScrollView>
   );
@@ -43,19 +35,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-<<<<<<< Updated upstream
-=======
-  cerrarsesions:{
-    height:50,
-    width:300,
-    backgroundColor:'#094293',
-    borderRadius:30,
-    paddingHorizontal:'25%',
-    paddingVertical:'2%',
-    marginTop:10,
-    marginHorizontal:'7%'
-  },
->>>>>>> Stashed changes
   profileImage: {
     width: "100%",
     height: 200,
@@ -65,50 +44,32 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   username: {
-<<<<<<< Updated upstream
-=======
-    color:"gray",
->>>>>>> Stashed changes
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    color:'gray'
   },
   infoText: {
     fontSize: 18,
     marginBottom: 5,
-<<<<<<< Updated upstream
-=======
     color:'gray'
->>>>>>> Stashed changes
   },
   summaryContainer: {
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
+    color:'black'
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-<<<<<<< Updated upstream
-=======
-    color:'gray'
-  },
-  sectionTitlec:{
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color:'white'
->>>>>>> Stashed changes
+    color:'black'
   },
   summaryText: {
     fontSize: 16,
-    color: "#666",
+    color:'gray'
   },
 });
 
-<<<<<<< Updated upstream
 export default Profile;
-=======
-export default Perfil;
->>>>>>> Stashed changes

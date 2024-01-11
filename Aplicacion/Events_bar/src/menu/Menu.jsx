@@ -7,7 +7,7 @@ const Drawer = createDrawerNavigator();
 function Menu() {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="Inicio" component={SubMenu} />
+      <Drawer.Screen name="InicioSub" options={{headerShown:false}} component={SubMenu} />
       <Drawer.Screen name="Perfil" component={Perfil} />
     </Drawer.Navigator>
   );

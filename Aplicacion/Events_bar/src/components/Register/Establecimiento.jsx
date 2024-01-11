@@ -9,7 +9,7 @@ const Establecimiento = () => {
   const [direccion, setDireccion] = useState('')
 
   const handleSubmit = () => {
-    Alert.alert(`${nombre}, ${email}, ${telefono}, ${direccion}`)
+    Alert.alert('Establecmiento Registrado Correctamente')
   }
 
   return (
@@ -40,7 +40,7 @@ const Establecimiento = () => {
           placeholder="ingresar Numero de documento"
           value={direccion}
           onChangeText={setDireccion} />
-
+        
         <TouchableOpacity onPress={handleSubmit} style={styles.submit}>
           <Text style={styles.submitText}>Continuar</Text>
         </TouchableOpacity>

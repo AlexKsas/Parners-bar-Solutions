@@ -2,10 +2,12 @@ import { View, Text, TextInput, StyleSheet, Button, TouchableOpacity} from 'reac
 import Desing from '../Diseno/Desing';
 import { useNavigation } from '@react-navigation/native';
 import { Component } from 'react';
-
+import GoogleSigIng from './GoogleSigIng';
+// import Facebook from './Facebook';
 
 
 function Login (){
+    
     const navigation = useNavigation();
     return(
         <View style={Desing.inicio}>
@@ -18,8 +20,6 @@ function Login (){
                     <Text style={styles.textRestablecer}>Restablecer Contraseña</Text>
                 </TouchableOpacity>
             </View>
-            
-
             <TouchableOpacity style={Desing.button} onPress={() => navigation.navigate('Inicio')}>
                 <Text style={Desing.buttonText}>Entrar</Text>
             </TouchableOpacity>
@@ -27,6 +27,10 @@ function Login (){
             <TouchableOpacity style={Desing.button} onPress={() => navigation.navigate("InicioRegistrar")}>
                 <Text style={Desing.buttonText}>Registrar</Text>
             </TouchableOpacity>
+            
+            <GoogleSigIng/>
+            {/* <Facebook/> */}
+
 
 
         </View>

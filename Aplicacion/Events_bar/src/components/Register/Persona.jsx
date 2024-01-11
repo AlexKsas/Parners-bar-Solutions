@@ -11,7 +11,7 @@ const Persona = () => {
   const [documento, setDocumento] = useState('')
 
   const handleSubmit = () => {
-    Alert.alert(`${nombre}, ${email}, ${telefono}, ${tipoDocumento}, ${documento}`)
+    Alert.alert('Usuario registrado correctamente')
   }
   const options = [
     { label: 'Opción 1', value: 'opcion1' },
