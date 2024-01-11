@@ -7,10 +7,10 @@ django.setup()
 from app.models import Establecimientos
 
 def create_establecimiento():
-    id_establecimiento = '2'
-    nombre = 'RAKATA'
-    latitud = '60.456'
-    longitud = '95.789'
+    id_establecimiento = '3'
+    nombre = 'INDIGO'
+    latitud = '40.456'
+    longitud = '17.789'
     id_horario = ''
 
     establecimiento, created = Establecimientos.objects.get_or_create(
