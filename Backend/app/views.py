@@ -9,8 +9,56 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Establecimientos
 import json
+from django.http import JsonResponse
+from pymongo import MongoClient
+from django.conf import settings
+from bson.json_util import dumps
 
 # Create your views here.
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def consulta_discotecas_cercanas(request):
+    print('@1')
+    # Establecer conexión con la base de datos MongoDB
+    client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
+    db = client[settings.DATABASES['default']['NAME']]
+    print('@2')
+    # Definir el query que deseas ejecutar
+    query = [
+        {
+            '$geoNear': {
+                'near': [-74.0859828, 4.6414189],
+                'distanceField': "distance",
+                'maxDistance': 2000,
+                'distanceMultiplier': 6371,
+                'spherical': True
+            }
+        }
+    ]
+    print('@3')
+    # Ejecutar el query en la colección "lugares"
+    resultados = db['Discotecas'].aggregate(query)
+    res = json.loads(dumps(resultados))
+    print('@4')
+    print('@@@',res)
+    # Procesar los resultados
+    lugares = []
+    for lugar in resultados:
+        lugares.append({
+            'name': lugar['Nombre'],
+            'location': lugar['location'],
+            'nit': lugar['Nit']
+        })
+    print('@5')
+    print('@@',lugares)
+    # Cerrar la conexión con la base de datos MongoDB
+    client.close()
+
+    # Devolver los resultados como una respuesta JSON
+    return JsonResponse({'resultados': lugares})
+
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
