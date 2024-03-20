@@ -15,48 +15,61 @@ from django.conf import settings
 from bson.json_util import dumps
 
 # Create your views here.
-@csrf_exempt
+
+
+"""
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])"""
+@csrf_exempt
 def consulta_discotecas_cercanas(request):
     print('@1')
+    latitud =   -74.0759 #request.GET.get('latitud')
+    longitud =  4.6514  #request.GET.get('longitud')
+    distancia_maxima = 295 #request.GET.get('distancia_maxima')
     # Establecer conexión con la base de datos MongoDB
     client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
     db = client[settings.DATABASES['default']['NAME']]
     print('@2')
-    # Definir el query que deseas ejecutar
+    """
     query = [
         {
             '$geoNear': {
-                'near': [-74.0859828, 4.6414189],
-                'distanceField': "distance",
-                'maxDistance': 2000,
+                'near': [float(longitud), float(latitud)],
+                'distanceField': "distancia",
+                'maxDistance': float(distancia_maxima),
                 'distanceMultiplier': 6371,
                 'spherical': True
             }
         }
     ]
+    """
+    query = [
+        {
+            '$geoNear':{
+                'near':{
+                    'type':"Point",
+                    'coordinates': [float(longitud), float(latitud)]
+                },
+                'distanceField': "distancia",
+                'maxDistance': float(distancia_maxima)
+                
+            }
+        }
+    ]
+
+    print('query',query)
+
     print('@3')
     # Ejecutar el query en la colección "lugares"
     resultados = db['Discotecas'].aggregate(query)
+    print('@@@4')
+    print('-----',resultados)
     res = json.loads(dumps(resultados))
     print('@4')
     print('@@@',res)
     # Procesar los resultados
-    lugares = []
-    for lugar in resultados:
-        lugares.append({
-            'name': lugar['Nombre'],
-            'location': lugar['location'],
-            'nit': lugar['Nit']
-        })
-    print('@5')
-    print('@@',lugares)
-    # Cerrar la conexión con la base de datos MongoDB
-    client.close()
-
-    # Devolver los resultados como una respuesta JSON
-    return JsonResponse({'resultados': lugares})
+    
+    return JsonResponse({'resultados': res})
 
 
 
