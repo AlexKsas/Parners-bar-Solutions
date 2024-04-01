@@ -35,8 +35,35 @@ class Establecimientos(models.Model):
     def __str__(self):
         return f"{self.id} - {self.NombreEstablecimiento} - {self.Latitud} - {self.Longitud} - {self.idHorario}"
 
+class b(models.Model):
 
+    id = models.CharField(max_length=10, primary_key=True)
+    def __str__(self):
+        return f"{self.id}"
+    
+class c(models.Model):
 
+    id = models.CharField(max_length=10, primary_key=True)
+    def __str__(self):
+        return f"{self.id}"
+    
 
+class eventos(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    latitud = models.CharField(max_length=45)
+    longitud = models.CharField(max_length=45)
+    nombreEvento = models.CharField(max_length=45)
+    cover = models.CharField(max_length=45)
+    horarios = models.CharField(max_length=45)
+    descripcion = models.CharField(max_length=45)
+    fechaInicio = models.CharField(max_length=45)
+    fechaFin = models.CharField(max_length=45)
+    habilitarCanciones = models.CharField(max_length=45)
+    idEstablecimiento = models.CharField(max_length=45)
+
+    def __str__(self):
+        return f"{self.id}"
+    
 
 

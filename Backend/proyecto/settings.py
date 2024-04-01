@@ -40,6 +40,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'app',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
-    'app',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -104,9 +104,9 @@ WSGI_APPLICATION = 'proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'BasePa',
+        'NAME': 'gh',
         'CLIENT': {
-            'host': 'mongodb+srv://ferchotorres007:ferchotorres007@cluster0.osbkggl.mongodb.net/BasePa?retryWrites=true&w=majority',
+            'host': 'mongodb+srv://ferchotorres007:ferchotorres007@cluster0.osbkggl.mongodb.net/gh?retryWrites=true&w=majority',
         },
     },
 }

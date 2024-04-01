@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Establecimientos
+from .models import eventos
 import json
 from django.http import JsonResponse
 from pymongo import MongoClient
@@ -23,9 +24,14 @@ from bson.json_util import dumps
 @csrf_exempt
 def consulta_discotecas_cercanas(request):
     print('@1')
-    latitud =   -74.0759 #request.GET.get('latitud')
-    longitud =  4.6514  #request.GET.get('longitud')
-    distancia_maxima = 295 #request.GET.get('distancia_maxima')
+    data = json.loads(request.body)
+    # Obtener las fechas inicial y final del cuerpo JSON
+    latitud = data.get('latitud')
+    longitud = data.get('longitud')
+    distancia_maxima = data.get('distancia_maxima')
+    #latitud =   -74.0759 #request.GET.get('latitud')
+    #longitud =  4.6514  #request.GET.get('longitud')
+    #distancia_maxima = 295 #request.GET.get('distancia_maxima')
     # Establecer conexión con la base de datos MongoDB
     client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
     db = client[settings.DATABASES['default']['NAME']]
@@ -117,6 +123,48 @@ def crear_registro_establecimientos(request):
             )
             
             return JsonResponse({'mensaje': 'Registro creado correctamente'})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            latitud = data.get('latitud')
+            longitud = data.get('longitud')
+            nombreEvento = data.get('nombreEvento')
+            cover = data.get('cover')
+            horarios = data.get('horarios')
+            descripcion = data.get('descripcion')
+            fechaInicio = data.get('fechaInicio')
+            fechaFin = data.get('fechaFin')
+            habilitarCanciones = data.get('habilitarCanciones')
+            idEstablecimiento = data.get('idEstablecimiento')
+            
+            # Crear un nuevo evento
+            nuevo_evento = eventos.objects.create(
+                latitud=latitud,
+                longitud=longitud,
+                nombreEvento=nombreEvento,
+                cover=cover,
+                horarios=horarios,
+                descripcion=descripcion,
+                fechaInicio=fechaInicio,
+                fechaFin=fechaFin,
+                habilitarCanciones=habilitarCanciones,
+                idEstablecimiento=idEstablecimiento
+            )
+            
+            # Retornar el ID del evento creado
+            return JsonResponse({'id': nuevo_evento.id})
         
         except Exception as e:
             return JsonResponse({'error': str(e)})

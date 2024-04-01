@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('establecimientos/', views.obtener_registros_establecimientos),
     path('establecimientoscerca/', views.consulta_discotecas_cercanas),
+    path('crearevento/', views.crear_evento),
     path('crearestablecimientos/',views.crear_registro_establecimientos),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
