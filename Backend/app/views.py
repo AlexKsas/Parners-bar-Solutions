@@ -9,6 +9,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import Establecimientos
 from .models import eventos
+from .models import MegustaEventos
+from .models import Comentarios
 import json
 from django.http import JsonResponse
 from pymongo import MongoClient
@@ -80,7 +82,6 @@ def consulta_discotecas_cercanas(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 @csrf_exempt
 def obtener_registros_establecimientos(request):
     registros = Establecimientos.objects.all()
@@ -169,5 +170,166 @@ def crear_evento(request):
         except Exception as e:
             return JsonResponse({'error': str(e)})
 
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_megusta_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('idEvento')
+            id_usuario = data.get('idUsuario')
+            
+            # Verificar si ya existe un registro con los mismos idEvento e idUsuario
+            # Obtener el registro MegustaEventos si existe
+            megusta_evento = MegustaEventos.objects.filter(idEvento=id_evento, idUsuario=id_usuario).first()
+
+            if megusta_evento:
+                return JsonResponse({'error': 'Ya existe un registro con el mismo idEvento e idUsuario'}, status=400)
+            
+            nuevo_megusta = MegustaEventos.objects.create(
+                idEvento=id_evento,
+                idUsuario=id_usuario
+            )
+            
+            return JsonResponse({'mensaje': 'Me gusta creado correctamente'})
+        
+        except Exception as e:
+            print('e')
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_comentario_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('idEvento')
+            id_usuario = data.get('idUsuario')
+            comentarioev = data.get('comentario')
+            
+            nuevo_comentario = Comentarios.objects.create(
+                idEvento=id_evento,
+                idUsuario=id_usuario,
+                comentario=comentarioev
+            )
+            
+            return JsonResponse({'id': nuevo_comentario.id})
+        
+        except Exception as e:
+            print('e')
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def eliminar_megusta_evento(request):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('idEvento')
+            id_usuario = data.get('idUsuario')
+
+            # Obtener el registro MegustaEventos si existe
+            megusta_evento = MegustaEventos.objects.filter(idEvento=id_evento, idUsuario=id_usuario).first()
+
+            if not megusta_evento:
+                return JsonResponse({'error': 'No se encuentra un registro con el idEvento e idUsuario proporcionados'}, status=400)
+
+            # Eliminar el registro
+            megusta_evento.delete()
+
+            return JsonResponse({'mensaje': 'Me gusta evento eliminado correctamente'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+    
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def eliminar_comentario_evento(request):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            id_comentario = data.get('id')
+
+            # Obtener el registro comentario si existe
+            comentario_evento = Comentarios.objects.filter(id=id_comentario).first()
+
+            if not comentario_evento:
+                return JsonResponse({'error': 'No se encuentra ningun comentario con ese id'}, status=400)
+
+            # Eliminar el registro
+            comentario_evento.delete()
+
+            return JsonResponse({'mensaje': 'comentario evento eliminado correctamente'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+    
+@csrf_exempt
+@api_view(['POST'])
+def obtener_megusta_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('idEvento')
+
+            # Obtener todos los "Me gusta" del evento
+            megusta_eventos = MegustaEventos.objects.filter(idEvento=id_evento)
+            
+            registros_json = []
+
+            for registro in megusta_eventos:
+                registro_dict = {
+                    'id': registro.id,
+                    'idEvento': registro.idEvento,
+                    'idUsuario': registro.idUsuario,
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+@csrf_exempt
+@api_view(['POST'])
+def obtener_comentarios_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('idEvento')
+
+            # Obtener todos los "comentarios" del evento
+            comentario_eventos = Comentarios.objects.filter(idEvento=id_evento)
+            
+            registros_json = []
+
+            for registro in comentario_eventos:
+                registro_dict = {
+                    'id': registro.id,
+                    'idEvento': registro.idEvento,
+                    'idUsuario': registro.idUsuario,
+                    'comentario': registro.comentario,
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
     else:
         return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})

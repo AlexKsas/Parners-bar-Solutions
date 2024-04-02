@@ -65,5 +65,24 @@ class eventos(models.Model):
     def __str__(self):
         return f"{self.id}"
     
+class MegustaEventos(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    idEvento = models.CharField(max_length=45)
+    idUsuario = models.CharField(max_length=45)
+
+    def __str__(self):
+        return f"{self.id}"
+    
+class Comentarios(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    idEvento = models.CharField(max_length=45)
+    idUsuario = models.CharField(max_length=45)
+    comentario = models.CharField(max_length=250)
+
+    def __str__(self):
+        return f"{self.id}"
+    
 
 
