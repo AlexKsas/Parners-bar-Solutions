@@ -38,19 +38,7 @@ def consulta_discotecas_cercanas(request):
     client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
     db = client[settings.DATABASES['default']['NAME']]
     print('@2')
-    """
-    query = [
-        {
-            '$geoNear': {
-                'near': [float(longitud), float(latitud)],
-                'distanceField': "distancia",
-                'maxDistance': float(distancia_maxima),
-                'distanceMultiplier': 6371,
-                'spherical': True
-            }
-        }
-    ]
-    """
+    
     query = [
         {
             '$geoNear':{
@@ -94,6 +82,31 @@ def obtener_registros_establecimientos(request):
             'Latitud': registro.Latitud,
             'Longitud': registro.Longitud,
             'idHorario': registro.idHorario,
+        }
+        registros_json.append(registro_dict)
+
+    return JsonResponse({'registros': registros_json})
+
+@api_view(['GET'])
+@csrf_exempt
+def obtener_registros_eventos(request):
+    registros = eventos.objects.all()
+    registros_json = []
+
+
+    for registro in registros:
+        registro_dict = {
+            'id': registro.id,
+            'nombreEvento': registro.nombreEvento,
+            'Latitud': registro.latitud,
+            'Longitud': registro.longitud,
+            'cover': registro.cover,
+            'horarios': registro.horarios,
+            'descripcion': registro.descripcion,
+            'fechaInicio': registro.fechaInicio,
+            'fechaFin': registro.fechaFin,
+            'habilitarCanciones': registro.habilitarCanciones,
+            "idEstablecimiento": registro.idEstablecimiento
         }
         registros_json.append(registro_dict)
 
