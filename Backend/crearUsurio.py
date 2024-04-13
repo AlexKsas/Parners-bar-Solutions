@@ -7,7 +7,7 @@ django.setup()
 
 def create_user():
     User = get_user_model()
-    username = 'bar1@gmail.com'  # Nombre de usuario deseado
+    username = 'bar3@gmail.com'  # Nombre de usuario deseado
     password = 'bar1234'  # Contraseña deseada
     cedula = '100243838'
     celular = '31154874'

@@ -24,6 +24,7 @@ from app import views
 
 urlpatterns = [
     path('obtenereventos/',views.obtener_registros_eventos),
+    path('createuser/',views.crear_usuario),
     path('admin/', admin.site.urls),
     path('establecimientos/', views.obtener_registros_establecimientos),
     path('establecimientoscerca/', views.consulta_discotecas_cercanas),
@@ -34,7 +35,7 @@ urlpatterns = [
     path('eliminarcomentario/', views.eliminar_comentario_evento),
     path('consultarmegusta/', views.obtener_megusta_evento),
     path('consultarcomentarios/', views.obtener_comentarios_evento),
-    path('crearestablecimientos/',views.crear_registro_establecimientos),
+    path('crearestablecimientos/',views.crear_discoteca),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Verificar token

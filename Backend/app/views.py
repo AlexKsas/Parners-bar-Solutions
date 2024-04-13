@@ -7,22 +7,35 @@ from rest_framework.decorators import api_view, permission_classes
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .models import Establecimientos
 from .models import eventos
 from .models import MegustaEventos
 from .models import Comentarios
 import json
 from django.http import JsonResponse
 from pymongo import MongoClient
+from rest_framework_simplejwt.tokens import Token
 from django.conf import settings
 from bson.json_util import dumps
+import uuid
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 
 
-"""
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])"""
+#BD:
+
+client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
+db = client[settings.DATABASES['default']['NAME']]
+
+
+
+'''------------------------------@discotecas-----------------------------------'''
+'''------------------------------@discotecas-----------------------------------'''
+'''------------------------------@discotecas-----------------------------------'''
+'''------------------------------@discotecas-----------------------------------'''
+'''------------------------------@discotecas-----------------------------------'''
+
+
 @csrf_exempt
 def consulta_discotecas_cercanas(request):
     print('@1')
@@ -35,8 +48,7 @@ def consulta_discotecas_cercanas(request):
     #longitud =  4.6514  #request.GET.get('longitud')
     #distancia_maxima = 295 #request.GET.get('distancia_maxima')
     # Establecer conexión con la base de datos MongoDB
-    client = MongoClient(settings.DATABASES['default']['CLIENT']['host'])
-    db = client[settings.DATABASES['default']['NAME']]
+    
     print('@2')
     
     query = [
@@ -66,6 +78,130 @@ def consulta_discotecas_cercanas(request):
     # Procesar los resultados
     
     return JsonResponse({'resultados': res})
+
+
+
+@csrf_exempt
+def crear_discoteca(request):
+    if request.method == 'POST':
+        try:
+            # Load JSON data from request body
+            data = json.loads(request.body)
+
+            #datos usuario 
+            User = get_user_model()
+            username = data.get('correoUsuario')  # Nombre de usuario desde el formulario
+            password = data.get('contrasenaUsuario')  # Contraseña desde el formulario
+            cedula = data.get('numeroIdentificacionUsuario')
+            celular = data.get('celularUsuario')
+            tipoIdentificacion = data.get('tipoIdentificacionUsuario')
+            first_name = data.get('nombreUsuario')  # Nombre desde el formulario
+            last_name = data.get('apellidoUsuario')
+
+            # datos para establecimiento
+            id = str(uuid.uuid4())
+            Nombre = data.get('nombreEstablecimiento')
+            latitud = float(data.get('latitud'))
+            longitud = float(data.get('longitud'))
+            Horario = data.get('horario')
+            Imagen = data.get('imagen')
+            Telefono = data.get('telefono')
+
+            # Validate required fields
+            if not id or not Nombre or not latitud or not longitud or not Horario or not Imagen or not Telefono or not username or not password or not cedula or not celular or not tipoIdentificacion or not first_name or not last_name:
+                return JsonResponse({'error': 'faltan campos requeridos'})
+            
+            user, created = User.objects.get_or_create(username=username)
+            if created:
+                user.set_password(password)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.cedula = cedula
+                user.celular = celular
+                user.tipoIdentificacion = tipoIdentificacion
+                user.idEstablecimiento = id
+                user.save()
+                # Create discoteca document
+                discoteca_document = {
+                    'id': id,
+                    'Nombre': Nombre,
+                    'location': {
+                        'type': 'Point',
+                        'coordinates': [longitud, latitud]
+                    },
+                    'Horario': Horario,
+                    'Imagen': Imagen,
+                    'Telefono': Telefono,
+                    'Estado':0
+                }
+
+                # Insert discoteca document into MongoDB
+                db['Discotecas'].insert_one(discoteca_document)
+
+                # Return success response
+                return JsonResponse({'message': 'Establecimiento creada con éxito', 'id': id})
+            else:
+                return JsonResponse({'error': 'El usuario ya existe'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'},status=400)
+
+
+'''------------------------------@usuarios-----------------------------------'''
+'''------------------------------@usuarios-----------------------------------'''
+'''------------------------------@usuarios-----------------------------------'''
+'''------------------------------@usuarios-----------------------------------'''
+'''------------------------------@usuarios-----------------------------------'''
+
+
+@csrf_exempt
+def crear_usuario(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            User = get_user_model()
+            username = data.get('correo')  # Nombre de usuario desde el formulario
+            password = data.get('contrasena')  # Contraseña desde el formulario
+            cedula = data.get('numeroIdentificacion')
+            celular = data.get('celular')
+            tipoIdentificacion = data.get('tipoIdentificacion')
+            first_name = data.get('nombre')  # Nombre desde el formulario
+            last_name = data.get('apellido')  # Apellido desde el formulario
+            direccion = data.get('direccion')
+            imagen = data.get('imagen')
+            fechaNacimiento = data.get('fechaNacimiento')
+            edad = data.get('edad')
+            genero = data.get('genero')
+        
+
+            # Verificar que los campos requeridos no estén vacíos
+            if not all([username, password, first_name, last_name,cedula,celular,direccion,fechaNacimiento,edad,genero,tipoIdentificacion]):
+                return JsonResponse({'error': 'Por favor, complete todos los campos.'}, status=400)
+
+            # Crear el nuevo usuario
+            user, created = User.objects.get_or_create(username=username)
+            if created:
+                user.set_password(password)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.cedula = cedula
+                user.celular = celular
+                user.tipoIdentificacion = tipoIdentificacion
+                user.direccion = direccion
+                user.imagen = imagen
+                user.fechaNacimiento = fechaNacimiento
+                user.edad = edad
+                user.genero = genero
+
+                user.save()
+                return JsonResponse({'mensaje': 'Usuario creado correctamente'})
+            else:
+                return JsonResponse({'error': 'El usuario ya existe'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'El método de solicitud debe ser POST'}, status=400)
 
 
 
@@ -113,37 +249,6 @@ def obtener_registros_eventos(request):
     return JsonResponse({'registros': registros_json})
 
 
-@csrf_exempt
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def crear_registro_establecimientos(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            Rid = data.get('id')
-            RNombreEstablecimiento = data.get('NombreEstablecimiento')
-            RLatitud = data.get('Latitud')
-            RLongitud = data.get('Longitud')
-            RidHorario = data.get('idHorario')
-            
-            # Crear un nuevo registro de establecimiento
-            nuevo_registro = Establecimientos.objects.create(
-                id=Rid,
-                NombreEstablecimiento=RNombreEstablecimiento,
-                Latitud=RLatitud,
-                Longitud=RLongitud,
-                idHorario=RidHorario
-
-            )
-            
-            return JsonResponse({'mensaje': 'Registro creado correctamente'})
-        
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
-
-    else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
-    
 
 @csrf_exempt
 @api_view(['POST'])
