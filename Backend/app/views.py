@@ -316,6 +316,43 @@ def crear_usuario(request):
 
 
 
+@csrf_exempt
+def obtener_evento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_evento = data.get('id_evento')
+            # Verificar si se proporcionó un ID de discoteca en el cuerpo de la petición
+            if id_evento is None:
+                return JsonResponse({'error': 'Se requiere proporcionar un ID de evento en el cuerpo de la petición'}, status=400)
+            
+            # Buscar la discoteca por su ID en la base de datos
+            evento = eventos.objects.filter(id=id_evento).first()
+            
+            if evento:
+                res = {
+                    "id":evento.id,
+                    "latitud":evento.latitud,
+                    "longitud":evento.longitud,
+                    "nombreEvento":evento.nombreEvento,
+                    "cover":evento.cover,
+                    "horarios":evento.horarios,
+                    "descripcion":evento.descripcion,
+                    "fechaInicio":evento.fechaInicio,
+                    "fechaFin":evento.fechaFin,
+                    "habilitarCanciones":evento.habilitarCanciones,
+                    "idEstablecimiento":evento.idEstablecimiento
+                }
+                return JsonResponse({'info': res})
+                
+            else:
+                # Si no se encontró la discoteca, devolver un error
+                return JsonResponse({'error': 'No se encontró ningun evento con el ID proporcionado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
+
 
 @api_view(['GET'])
 @csrf_exempt

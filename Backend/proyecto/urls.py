@@ -26,6 +26,7 @@ urlpatterns = [
     path('obtenereventos/',views.obtener_registros_eventos),
     path('userinfo/',views.consultar_usuario),
     path('infoestableciminetocel/',views.obtener_discotecaCel),
+    path('infoevento/',views.obtener_evento),
     path('infoestableciminetopc/',views.obtener_discotecaPc),
     path('createuser/',views.crear_usuario),
     path('admin/', admin.site.urls),
