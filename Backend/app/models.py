@@ -53,10 +53,11 @@ class eventos(models.Model):
     cover = models.CharField(max_length=45)
     horarios = models.CharField(max_length=45)
     descripcion = models.CharField(max_length=45)
-    fechaInicio = models.CharField(max_length=45)
-    fechaFin = models.CharField(max_length=45)
+    fechaInicio = models.DateField(max_length=45)
+    fechaFin = models.DateField(max_length=45)
     habilitarCanciones = models.CharField(max_length=45)
     idEstablecimiento = models.CharField(max_length=45)
+    imagen = models.TextField()
 
     def __str__(self):
         return f"{self.id}"

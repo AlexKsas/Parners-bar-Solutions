@@ -18,6 +18,8 @@ from django.conf import settings
 from bson.json_util import dumps
 import uuid
 from django.contrib.auth import get_user_model
+import jwt
+
 
 # Create your views here.
 
@@ -34,6 +36,77 @@ db = client[settings.DATABASES['default']['NAME']]
 '''------------------------------@discotecas-----------------------------------'''
 '''------------------------------@discotecas-----------------------------------'''
 '''------------------------------@discotecas-----------------------------------'''
+@csrf_exempt
+def obtener_registros_establecimientos(request):
+    todas_las_discotecas = db['Discotecas'].find({})
+    res = json.loads(dumps(todas_las_discotecas))
+    print('@4')
+    print('@@@',res)
+    # Procesar los resultados
+    
+    return JsonResponse({'resultados': res})
+
+@csrf_exempt
+def obtener_discotecaCel(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_discoteca = data.get('id_discoteca')
+            # Verificar si se proporcionó un ID de discoteca en el cuerpo de la petición
+            if id_discoteca is None:
+                return JsonResponse({'error': 'Se requiere proporcionar un ID de discoteca en el cuerpo de la petición'}, status=400)
+            
+            # Buscar la discoteca por su ID en la base de datos
+            discoteca = db['Discotecas'].find_one({'id': id_discoteca})
+            
+            if discoteca:
+                res = json.loads(dumps(discoteca))
+                return JsonResponse({'info': res})
+                
+            else:
+                # Si no se encontró la discoteca, devolver un error
+                return JsonResponse({'error': 'No se encontró ninguna discoteca con el ID proporcionado'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
+    
+
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def obtener_discotecaPc(request):
+    if request.method == 'GET':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+            # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+            id_usuario = obtenerIdUser(token)
+            id_discoteca = obtener_establecimiento_de_usuario_por_id(id_usuario)
+            
+            # Verificar si se proporcionó un ID de discoteca en el cuerpo de la petición
+            if id_discoteca is None:
+                return JsonResponse({'error': 'El usuario no tiene un establecimeinto relacionado'}, status=400)
+            
+            # Buscar la discoteca por su ID en la base de datos
+            discoteca = db['Discotecas'].find_one({'id': id_discoteca})
+            
+            if discoteca:
+                res = json.loads(dumps(discoteca))
+                return JsonResponse({'info': res})
+            else:
+                # Si no se encontró la discoteca, devolver un error
+                return JsonResponse({'error': 'No se encontró ninguna discoteca para ese usuario'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones GET'}, status=400)
+
+
 
 
 @csrf_exempt
@@ -56,7 +129,7 @@ def consulta_discotecas_cercanas(request):
             '$geoNear':{
                 'near':{
                     'type':"Point",
-                    'coordinates': [float(longitud), float(latitud)]
+                    'coordinates': [float(latitud), float(longitud)]
                 },
                 'distanceField': "distancia",
                 'maxDistance': float(distancia_maxima)
@@ -127,7 +200,7 @@ def crear_discoteca(request):
                     'Nombre': Nombre,
                     'location': {
                         'type': 'Point',
-                        'coordinates': [longitud, latitud]
+                        'coordinates': [latitud, longitud]
                     },
                     'Horario': Horario,
                     'Imagen': Imagen,
@@ -153,6 +226,44 @@ def crear_discoteca(request):
 '''------------------------------@usuarios-----------------------------------'''
 '''------------------------------@usuarios-----------------------------------'''
 '''------------------------------@usuarios-----------------------------------'''
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def consultar_usuario(request):
+    if request.method == 'GET':
+        try:
+            User = get_user_model()
+            authorization_header = request.headers.get('Authorization')
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+            # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+            id_usuario = obtenerIdUser(token)
+            # Crear el nuevo usuario
+            user= User.objects.get(id=id_usuario)
+            user_info = {
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'cedula': user.cedula,
+                'celular': user.celular,
+                'tipoIdentificacion': user.tipoIdentificacion,
+                'direccion': user.direccion,
+                'imagen': user.imagen,
+                'fechaNacimiento': user.fechaNacimiento,
+                'edad': user.edad,
+                'genero': user.genero
+            }
+            return JsonResponse(user_info)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'El método de solicitud debe ser GET'}, status=400)
+
+
 
 
 @csrf_exempt
@@ -205,23 +316,6 @@ def crear_usuario(request):
 
 
 
-@api_view(['GET'])
-@csrf_exempt
-def obtener_registros_establecimientos(request):
-    registros = Establecimientos.objects.all()
-    registros_json = []
-
-    for registro in registros:
-        registro_dict = {
-            'id': registro.id,
-            'NombreEstablecimiento': registro.NombreEstablecimiento,
-            'Latitud': registro.Latitud,
-            'Longitud': registro.Longitud,
-            'idHorario': registro.idHorario,
-        }
-        registros_json.append(registro_dict)
-
-    return JsonResponse({'registros': registros_json})
 
 @api_view(['GET'])
 @csrf_exempt
@@ -242,7 +336,8 @@ def obtener_registros_eventos(request):
             'fechaInicio': registro.fechaInicio,
             'fechaFin': registro.fechaFin,
             'habilitarCanciones': registro.habilitarCanciones,
-            "idEstablecimiento": registro.idEstablecimiento
+            "idEstablecimiento": registro.idEstablecimiento,
+            "imagen":registro.imagen
         }
         registros_json.append(registro_dict)
 
@@ -256,6 +351,13 @@ def obtener_registros_eventos(request):
 def crear_evento(request):
     if request.method == 'POST':
         try:
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
             data = json.loads(request.body)
             latitud = data.get('latitud')
             longitud = data.get('longitud')
@@ -266,7 +368,13 @@ def crear_evento(request):
             fechaInicio = data.get('fechaInicio')
             fechaFin = data.get('fechaFin')
             habilitarCanciones = data.get('habilitarCanciones')
-            idEstablecimiento = data.get('idEstablecimiento')
+            idEstablecimiento = obtener_establecimiento_de_usuario_por_id(id_usuario)
+            if(idEstablecimiento):
+                print('encontro establecimiento')
+            else:
+                return JsonResponse({'error': 'No se encontro establecimiento para ese usuario'},status=400)
+                
+            imagenint = data.get('imagen')
             
             # Crear un nuevo evento
             nuevo_evento = eventos.objects.create(
@@ -279,7 +387,8 @@ def crear_evento(request):
                 fechaInicio=fechaInicio,
                 fechaFin=fechaFin,
                 habilitarCanciones=habilitarCanciones,
-                idEstablecimiento=idEstablecimiento
+                idEstablecimiento=idEstablecimiento,
+                imagen=imagenint
             )
             
             # Retornar el ID del evento creado
@@ -299,28 +408,37 @@ def crear_megusta_evento(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
             id_evento = data.get('idEvento')
-            id_usuario = data.get('idUsuario')
+            
             
             # Verificar si ya existe un registro con los mismos idEvento e idUsuario
             # Obtener el registro MegustaEventos si existe
             megusta_evento = MegustaEventos.objects.filter(idEvento=id_evento, idUsuario=id_usuario).first()
 
             if megusta_evento:
-                return JsonResponse({'error': 'Ya existe un registro con el mismo idEvento e idUsuario'}, status=400)
-            
-            nuevo_megusta = MegustaEventos.objects.create(
-                idEvento=id_evento,
-                idUsuario=id_usuario
-            )
-            
-            return JsonResponse({'mensaje': 'Me gusta creado correctamente'})
+                # Si ya existe, eliminar el registro
+                megusta_evento.delete()
+                return JsonResponse({'mensaje': 'Se elimino like'})
+            else:
+                # Si no existe, crear un nuevo registro
+                nuevo_megusta = MegustaEventos.objects.create(
+                    idEvento=id_evento,
+                    idUsuario=id_usuario
+                )
+                return JsonResponse({'mensaje': 'Like creado correctamente'})
         
         except Exception as e:
             print('e')
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)},status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'},status=400)
     
 
 @csrf_exempt
@@ -330,15 +448,23 @@ def crear_comentario_evento(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            id_evento = data.get('idEvento')
-            id_usuario = data.get('idUsuario')
-            comentarioev = data.get('comentario')
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                # Separar el tipo de esquema de autenticación y el token
+                _, token = authorization_header.split(None, 1)
+                # Eliminar el prefijo 'Bearer ' si está presente en el token
+                token = token.replace('Bearer ', '')
+                # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+                print('Token:', token)
+                id_evento = data.get('idEvento')
+                id_usuario = obtenerIdUser(token)
+                comentarioev = data.get('comentario')
             
-            nuevo_comentario = Comentarios.objects.create(
-                idEvento=id_evento,
-                idUsuario=id_usuario,
-                comentario=comentarioev
-            )
+                nuevo_comentario = Comentarios.objects.create(
+                    idEvento=id_evento,
+                    idUsuario=id_usuario,
+                    comentario=comentarioev
+                )
             
             return JsonResponse({'id': nuevo_comentario.id})
         
@@ -414,6 +540,7 @@ def obtener_megusta_evento(request):
                 registro_dict = {
                     'id': registro.id,
                     'idEvento': registro.idEvento,
+                    'nombreUsuario': obtener_nombre_de_usuario_por_id(registro.idUsuario),
                     'idUsuario': registro.idUsuario,
                 }
                 registros_json.append(registro_dict)
@@ -442,6 +569,7 @@ def obtener_comentarios_evento(request):
                     'id': registro.id,
                     'idEvento': registro.idEvento,
                     'idUsuario': registro.idUsuario,
+                    'nombreUsuario': obtener_nombre_de_usuario_por_id(registro.idUsuario),
                     'comentario': registro.comentario,
                 }
                 registros_json.append(registro_dict)
@@ -451,3 +579,51 @@ def obtener_comentarios_evento(request):
             return JsonResponse({'error': str(e)})
     else:
         return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+
+
+
+
+'''funciones'''
+
+def obtenerIdUser(token):
+
+    # Clave secreta utilizada para firmar el token (si es necesario)
+    clave_secreta = "django-insecure-zl*jy15203f%uv9*(tmar=#-%yrk2(3lu^q9=zh^+#q864l1ue"
+
+    # Decodificar el token
+    try:
+        decoded_token = jwt.decode(token, clave_secreta, algorithms=["HS256"])
+        print("Token decodificado:", decoded_token)
+        return decoded_token['user_id']
+    except jwt.ExpiredSignatureError:
+        print("El token ha expirado.")
+    except jwt.InvalidTokenError:
+        print("El token es inválido.")
+
+
+
+def obtener_nombre_de_usuario_por_id(id_usuario):
+    try:
+        # Buscar el usuario por su ID
+        User = get_user_model()
+        usuario = User.objects.get(id=id_usuario)
+        # Obtener el nombre del usuario
+        nombre_usuario = usuario.first_name
+        return nombre_usuario
+    except User.DoesNotExist:
+        # Manejar el caso en que no se encuentre el usuario
+        return None
+
+
+def obtener_establecimiento_de_usuario_por_id(id_usuario):
+    try:
+        # Buscar el usuario por su ID
+        User = get_user_model()
+        usuario = User.objects.get(id=id_usuario)
+        # Obtener el nombre del usuario
+        idevento = usuario.idEstablecimiento
+        return idevento
+    except User.DoesNotExist:
+        # Manejar el caso en que no se encuentre el usuario
+        return None

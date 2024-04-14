@@ -24,12 +24,15 @@ from app import views
 
 urlpatterns = [
     path('obtenereventos/',views.obtener_registros_eventos),
+    path('userinfo/',views.consultar_usuario),
+    path('infoestableciminetocel/',views.obtener_discotecaCel),
+    path('infoestableciminetopc/',views.obtener_discotecaPc),
     path('createuser/',views.crear_usuario),
     path('admin/', admin.site.urls),
     path('establecimientos/', views.obtener_registros_establecimientos),
     path('establecimientoscerca/', views.consulta_discotecas_cercanas),
     path('crearevento/', views.crear_evento),
-    path('crearmegusta/', views.crear_megusta_evento),
+    path('like/', views.crear_megusta_evento),
     path('crearcomentario/', views.crear_comentario_evento),
     path('eliminarmegusta/', views.eliminar_megusta_evento),
     path('eliminarcomentario/', views.eliminar_comentario_evento),
