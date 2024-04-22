@@ -40,6 +40,7 @@ urlpatterns = [
     path('consultarmegusta/', views.obtener_megusta_evento),
     path('consultarcomentarios/', views.obtener_comentarios_evento),
     path('crearestablecimientos/',views.crear_discoteca),
+    path('eventsbyestablecimiento/',views.obtener_registros_eventos_por_establecimiento),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Verificar token

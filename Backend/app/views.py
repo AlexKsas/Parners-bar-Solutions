@@ -341,7 +341,8 @@ def obtener_evento(request):
                     "fechaInicio":evento.fechaInicio,
                     "fechaFin":evento.fechaFin,
                     "habilitarCanciones":evento.habilitarCanciones,
-                    "idEstablecimiento":evento.idEstablecimiento
+                    "idEstablecimiento":evento.idEstablecimiento,
+                    "NumeroLikes":obtener_numero_likes_evento(evento.id)
                 }
                 return JsonResponse({'info': res})
                 
@@ -374,7 +375,37 @@ def obtener_registros_eventos(request):
             'fechaFin': registro.fechaFin,
             'habilitarCanciones': registro.habilitarCanciones,
             "idEstablecimiento": registro.idEstablecimiento,
-            "imagen":registro.imagen
+            "imagen":registro.imagen,
+            "NumeroLikes":obtener_numero_likes_evento(registro.id)
+        }
+        registros_json.append(registro_dict)
+
+    return JsonResponse({'registros': registros_json})
+
+@api_view(['POST'])
+@csrf_exempt
+def obtener_registros_eventos_por_establecimiento(request):
+    data = json.loads(request.body)
+    registros = eventos.objects.filter(idEstablecimiento=data.get('idEstablecimiento'))
+    registros_json = []
+
+
+    for registro in registros:
+        registro_dict = {
+            'id': registro.id,
+            'nombreEvento': registro.nombreEvento,
+            'Latitud': registro.latitud,
+            'Longitud': registro.longitud,
+            'cover': registro.cover,
+            'horarios': registro.horarios,
+            'descripcion': registro.descripcion,
+            'fechaInicio': registro.fechaInicio,
+            'fechaFin': registro.fechaFin,
+            'habilitarCanciones': registro.habilitarCanciones,
+            "idEstablecimiento": registro.idEstablecimiento,
+            "imagen":registro.imagen,
+            "NumeroLikes":obtener_numero_likes_evento(registro.id)
+            
         }
         registros_json.append(registro_dict)
 
@@ -664,3 +695,11 @@ def obtener_establecimiento_de_usuario_por_id(id_usuario):
     except User.DoesNotExist:
         # Manejar el caso en que no se encuentre el usuario
         return None
+    
+def obtener_numero_likes_evento(id_evento):
+    try:
+        registro = MegustaEventos.objects.filter(idEvento=id_evento).count()
+        return registro
+    except MegustaEventos.DoesNotExist:
+        # Manejar el caso en que no se encuentre el usuario
+        return 0
