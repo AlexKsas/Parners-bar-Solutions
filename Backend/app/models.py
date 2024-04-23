@@ -71,6 +71,15 @@ class MegustaEventos(models.Model):
     def __str__(self):
         return f"{self.id}"
     
+class MegustaEstablecimiento(models.Model):
+
+    id = models.AutoField(primary_key=True)
+    idEstablecimiento = models.CharField(max_length=45)
+    idUsuario = models.CharField(max_length=45)
+
+    def __str__(self):
+        return f"{self.id}"
+    
 class Comentarios(models.Model):
 
     id = models.AutoField(primary_key=True)

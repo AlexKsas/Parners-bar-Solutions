@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .models import eventos
 from .models import MegustaEventos
+from .models import MegustaEstablecimiento
 from .models import Comentarios
 import json
 from django.http import JsonResponse
@@ -328,6 +329,8 @@ def obtener_evento(request):
             
             # Buscar la discoteca por su ID en la base de datos
             evento = eventos.objects.filter(id=id_evento).first()
+            # Buscar la discoteca por su ID en la base de datos
+            discoteca = db['Discotecas'].find_one({'id': evento.idEstablecimiento})
             
             if evento:
                 res = {
@@ -342,7 +345,11 @@ def obtener_evento(request):
                     "fechaFin":evento.fechaFin,
                     "habilitarCanciones":evento.habilitarCanciones,
                     "idEstablecimiento":evento.idEstablecimiento,
-                    "NumeroLikes":obtener_numero_likes_evento(evento.id)
+                    "imagen":evento.imagen,
+                    "numeroLikes":obtener_numero_likes_evento(evento.id),
+                    "nombreEstablecimiento": discoteca['Nombre'] if discoteca else '',
+                    "imagenEstablecimiento": discoteca['Imagen'] if discoteca else ''
+
                 }
                 return JsonResponse({'info': res})
                 
@@ -361,8 +368,11 @@ def obtener_registros_eventos(request):
     registros = eventos.objects.all()
     registros_json = []
 
+    
 
     for registro in registros:
+        # Buscar la discoteca por su ID en la base de datos
+        discoteca = db['Discotecas'].find_one({'id': registro.idEstablecimiento})
         registro_dict = {
             'id': registro.id,
             'nombreEvento': registro.nombreEvento,
@@ -376,7 +386,9 @@ def obtener_registros_eventos(request):
             'habilitarCanciones': registro.habilitarCanciones,
             "idEstablecimiento": registro.idEstablecimiento,
             "imagen":registro.imagen,
-            "NumeroLikes":obtener_numero_likes_evento(registro.id)
+            "numeroLikes":obtener_numero_likes_evento(registro.id),
+            "nombreEstablecimiento": discoteca['Nombre'] if discoteca else '',
+            "imagenEstablecimiento": discoteca['Imagen'] if discoteca else ''
         }
         registros_json.append(registro_dict)
 
@@ -391,6 +403,8 @@ def obtener_registros_eventos_por_establecimiento(request):
 
 
     for registro in registros:
+        # Buscar la discoteca por su ID en la base de datos
+        discoteca = db['Discotecas'].find_one({'id': registro.idEstablecimiento})
         registro_dict = {
             'id': registro.id,
             'nombreEvento': registro.nombreEvento,
@@ -404,7 +418,9 @@ def obtener_registros_eventos_por_establecimiento(request):
             'habilitarCanciones': registro.habilitarCanciones,
             "idEstablecimiento": registro.idEstablecimiento,
             "imagen":registro.imagen,
-            "NumeroLikes":obtener_numero_likes_evento(registro.id)
+            "numeroLikes":obtener_numero_likes_evento(registro.id),
+            "nombreEstablecimiento": discoteca['Nombre'] if discoteca else '',
+            "imagenEstablecimiento": discoteca['Imagen'] if discoteca else ''
             
         }
         registros_json.append(registro_dict)
@@ -470,6 +486,43 @@ def crear_evento(request):
     
 
 @csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def actualizar_evento(request):
+    if request.method == 'PUT':
+        try:
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
+            idEstablecimiento = obtener_establecimiento_de_usuario_por_id(id_usuario)
+            id_evento = json.loads(request.body).get('id')
+            evento_a_actualizar = eventos.objects.get(id=id_evento)
+
+            if evento_a_actualizar.idEstablecimiento != idEstablecimiento:
+                return JsonResponse({'error': 'Usuario no esta relacionado al establecimiento del evento'}, status=405)
+
+
+            data = json.loads(request.body)
+            for campo, valor in data.items():
+                if campo in ['latitud', 'longitud', 'nombreEvento', 'cover', 'horarios', 'descripcion', 'fechaInicio', 'fechaFin', 'habilitarCanciones', 'imagen']:
+                    setattr(evento_a_actualizar, campo, valor)
+
+            evento_a_actualizar.save()  # Guardar los cambios en el evento actualizado
+
+            return JsonResponse({'mensaje': 'Evento actualizado correctamente'})
+        except eventos.DoesNotExist:
+            return JsonResponse({'error': 'No se encontró evento relacionado al usuario que envia token'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'})
+
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def crear_megusta_evento(request):
@@ -498,6 +551,45 @@ def crear_megusta_evento(request):
                 # Si no existe, crear un nuevo registro
                 nuevo_megusta = MegustaEventos.objects.create(
                     idEvento=id_evento,
+                    idUsuario=id_usuario
+                )
+                return JsonResponse({'mensaje': 'Like creado correctamente'})
+        
+        except Exception as e:
+            print('e')
+            return JsonResponse({'error': str(e)},status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'},status=400)
+    
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_megusta_establecimiento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
+            id_establecimiento = data.get('idEstablecimiento')
+            
+            
+            # Verificar si ya existe un registro con los mismos idEvento e idUsuario
+            # Obtener el registro MegustaEventos si existe
+            megusta_establecimiento = MegustaEstablecimiento.objects.filter(idEstablecimiento=id_establecimiento, idUsuario=id_usuario).first()
+
+            if megusta_establecimiento:
+                # Si ya existe, eliminar el registro
+                megusta_establecimiento.delete()
+                return JsonResponse({'mensaje': 'Se elimino like'})
+            else:
+                # Si no existe, crear un nuevo registro
+                nuevo_megusta = MegustaEstablecimiento.objects.create(
+                    idEstablecimiento=id_establecimiento,
                     idUsuario=id_usuario
                 )
                 return JsonResponse({'mensaje': 'Like creado correctamente'})
@@ -575,6 +667,13 @@ def eliminar_comentario_evento(request):
         try:
             data = json.loads(request.body)
             id_comentario = data.get('id')
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
 
             # Obtener el registro comentario si existe
             comentario_evento = Comentarios.objects.filter(id=id_comentario).first()
@@ -583,6 +682,9 @@ def eliminar_comentario_evento(request):
                 return JsonResponse({'error': 'No se encuentra ningun comentario con ese id'}, status=400)
 
             # Eliminar el registro
+            if comentario_evento.idUsuario != str(id_usuario):
+                return JsonResponse({'error': 'Usuario idUsuario no corresponde al usuario de este comentario'}, status=400)
+
             comentario_evento.delete()
 
             return JsonResponse({'mensaje': 'comentario evento eliminado correctamente'})
@@ -608,6 +710,34 @@ def obtener_megusta_evento(request):
                 registro_dict = {
                     'id': registro.id,
                     'idEvento': registro.idEvento,
+                    'nombreUsuario': obtener_nombre_de_usuario_por_id(registro.idUsuario),
+                    'idUsuario': registro.idUsuario,
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+@csrf_exempt
+@api_view(['POST'])
+def obtener_megusta_establecimiento(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_establecimiento = data.get('idEstablecimiento')
+
+            # Obtener todos los "Me gusta" del evento
+            megusta_establecimiento = MegustaEstablecimiento.objects.filter(idEstablecimiento=id_establecimiento)
+            
+            registros_json = []
+
+            for registro in megusta_establecimiento:
+                registro_dict = {
+                    'id': registro.id,
+                    'idEstablecimiento': registro.idEstablecimiento,
                     'nombreUsuario': obtener_nombre_de_usuario_por_id(registro.idUsuario),
                     'idUsuario': registro.idUsuario,
                 }
@@ -699,6 +829,14 @@ def obtener_establecimiento_de_usuario_por_id(id_usuario):
 def obtener_numero_likes_evento(id_evento):
     try:
         registro = MegustaEventos.objects.filter(idEvento=id_evento).count()
+        return registro
+    except MegustaEventos.DoesNotExist:
+        # Manejar el caso en que no se encuentre el usuario
+        return 0
+    
+def obtener_numero_likes_establecimiento(id_establecimiento):
+    try:
+        registro = MegustaEstablecimiento.objects.filter(idEstablecimiento=id_establecimiento).count()
         return registro
     except MegustaEventos.DoesNotExist:
         # Manejar el caso en que no se encuentre el usuario

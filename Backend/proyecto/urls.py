@@ -34,13 +34,16 @@ urlpatterns = [
     path('establecimientoscerca/', views.consulta_discotecas_cercanas),
     path('crearevento/', views.crear_evento),
     path('like/', views.crear_megusta_evento),
+    path('likeestablecimiento/', views.crear_megusta_establecimiento),
     path('crearcomentario/', views.crear_comentario_evento),
     path('eliminarmegusta/', views.eliminar_megusta_evento),
     path('eliminarcomentario/', views.eliminar_comentario_evento),
     path('consultarmegusta/', views.obtener_megusta_evento),
+    path('consultarmegustaestablecimiento/', views.obtener_megusta_establecimiento),
     path('consultarcomentarios/', views.obtener_comentarios_evento),
     path('crearestablecimientos/',views.crear_discoteca),
     path('eventsbyestablecimiento/',views.obtener_registros_eventos_por_establecimiento),
+    path('updateevent/',views.actualizar_evento),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Verificar token
