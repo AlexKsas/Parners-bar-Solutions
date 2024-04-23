@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'proyecto.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'gh',
+        'NAME': 'BasePoyectoBar',
         'CLIENT': {
             'host': 'mongodb+srv://ferchotorres007:ferchotorres007@cluster0.osbkggl.mongodb.net/gh?retryWrites=true&w=majority',
         },
