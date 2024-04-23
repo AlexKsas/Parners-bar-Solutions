@@ -41,11 +41,14 @@ db = client[settings.DATABASES['default']['NAME']]
 def obtener_registros_establecimientos(request):
     todas_las_discotecas = db['Discotecas'].find({})
     res = json.loads(dumps(todas_las_discotecas))
-    print('@4')
-    print('@@@',res)
-    # Procesar los resultados
     
-    return JsonResponse({'resultados': res})
+    # Procesar los resultados
+    registros_validos = []
+    for disco in res:
+        disco['numeroLikes'] = obtener_numero_likes_establecimiento(disco['id'])
+        registros_validos.append(disco)
+    
+    return JsonResponse({'resultados': registros_validos})
 
 @csrf_exempt
 def obtener_discotecaCel(request):
@@ -61,8 +64,10 @@ def obtener_discotecaCel(request):
             discoteca = db['Discotecas'].find_one({'id': id_discoteca})
             
             if discoteca:
+                discoteca['numeroLikes'] = obtener_numero_likes_establecimiento(discoteca['id'])
                 res = json.loads(dumps(discoteca))
-                return JsonResponse({'info': res})
+                # Procesar los resultados
+                return JsonResponse({'resultados': res})
                 
             else:
                 # Si no se encontró la discoteca, devolver un error
@@ -97,8 +102,10 @@ def obtener_discotecaPc(request):
             discoteca = db['Discotecas'].find_one({'id': id_discoteca})
             
             if discoteca:
+                discoteca['numeroLikes'] = obtener_numero_likes_establecimiento(discoteca['id'])
                 res = json.loads(dumps(discoteca))
-                return JsonResponse({'info': res})
+                # Procesar los resultados
+                return JsonResponse({'resultados': res})
             else:
                 # Si no se encontró la discoteca, devolver un error
                 return JsonResponse({'error': 'No se encontró ninguna discoteca para ese usuario'}, status=404)
@@ -147,11 +154,17 @@ def consulta_discotecas_cercanas(request):
     print('@@@4')
     print('-----',resultados)
     res = json.loads(dumps(resultados))
+    # Procesar los resultados
+    registros_validos = []
+    for disco in res:
+        disco['numeroLikes'] = obtener_numero_likes_establecimiento(disco['id'])
+        registros_validos.append(disco)
+    
     print('@4')
     print('@@@',res)
     # Procesar los resultados
+    return JsonResponse({'resultados': registros_validos})
     
-    return JsonResponse({'resultados': res})
 
 
 
