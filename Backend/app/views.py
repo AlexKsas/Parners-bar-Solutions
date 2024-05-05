@@ -11,6 +11,7 @@ from .models import eventos
 from .models import MegustaEventos
 from .models import MegustaEstablecimiento
 from .models import Comentarios
+from .models import Productos
 import json
 from django.http import JsonResponse
 from pymongo import MongoClient
@@ -85,7 +86,7 @@ def obtener_discotecaCel(request):
 def obtener_discotecaPc(request):
     if request.method == 'GET':
         try:
-            data = json.loads(request.body)
+            
             authorization_header = request.headers.get('Authorization')
             _, token = authorization_header.split(None, 1)
             # Eliminar el prefijo 'Bearer ' si está presente en el token
@@ -103,6 +104,7 @@ def obtener_discotecaPc(request):
             
             if discoteca:
                 discoteca['numeroLikes'] = obtener_numero_likes_establecimiento(discoteca['id'])
+                discoteca['email'] = obtener_email_establecimiento(discoteca['id'])
                 res = json.loads(dumps(discoteca))
                 # Procesar los resultados
                 return JsonResponse({'resultados': res})
@@ -193,6 +195,7 @@ def crear_discoteca(request):
             Horario = data.get('horario')
             Imagen = data.get('imagen')
             Telefono = data.get('telefono')
+            Descripcion = data.get('descripcion')
 
             # Validate required fields
             if not id or not Nombre or not latitud or not longitud or not Horario or not Imagen or not Telefono or not username or not password or not cedula or not celular or not tipoIdentificacion or not first_name or not last_name:
@@ -219,6 +222,7 @@ def crear_discoteca(request):
                     'Horario': Horario,
                     'Imagen': Imagen,
                     'Telefono': Telefono,
+                    'Descripcion': Descripcion,
                     'Estado':0
                 }
 
@@ -792,10 +796,170 @@ def obtener_comentarios_evento(request):
         return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
     
 
+'''------------------------------@productos-----------------------------------'''
+'''------------------------------@productos-----------------------------------'''
+'''------------------------------@productos-----------------------------------'''
+'''------------------------------@productos-----------------------------------'''
+'''------------------------------@productos-----------------------------------'''
+
+    
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_producto(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                # Separar el tipo de esquema de autenticación y el token
+                _, token = authorization_header.split(None, 1)
+                # Eliminar el prefijo 'Bearer ' si está presente en el token
+                token = token.replace('Bearer ', '')
+                # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+                id_usuario = obtenerIdUser(token)
+                id_dicoteca = obtener_establecimiento_de_usuario_por_id(id_usuario)
+                nombre_producto = data.get('nombre')
+                precio_producto = data.get('precio')
+                categoria_producto = data.get('categoria')
+                urlImagen_producto = data.get('imagen')
+            
+                nuevo_producto = Productos.objects.create(
+                    idEstablecimiento = id_dicoteca,
+                    nombre = nombre_producto,
+                    precio = precio_producto,
+                    categoria = categoria_producto,
+                    urlImagen = urlImagen_producto
+                )
+            
+            return JsonResponse({'id': nuevo_producto.id})
+        
+        except Exception as e:
+            print('e')
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
 
 
 
-'''funciones'''
+
+
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def eliminar_producto(request):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                # Separar el tipo de esquema de autenticación y el token
+                _, token = authorization_header.split(None, 1)
+                # Eliminar el prefijo 'Bearer ' si está presente en el token
+                token = token.replace('Bearer ', '')
+                # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+                id_usuario = obtenerIdUser(token)
+                id_dicoteca = obtener_establecimiento_de_usuario_por_id(id_usuario)
+                
+                id_producto = data.get('id')
+                
+                # Verificar si el producto pertenece al establecimiento del usuario
+                producto = Productos.objects.get(id=id_producto)
+                if producto.idEstablecimiento == id_dicoteca:
+                    producto.delete()
+                    return JsonResponse({'mensaje': 'Producto eliminado correctamente'})
+                else:
+                    return JsonResponse({'error': 'El usuario no puede eliminar este producto, no pertenece al establecimiento'}, status=400)
+            else:
+                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+        except Productos.DoesNotExist:
+            return JsonResponse({'error': 'El producto no existe'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+    
+
+
+@csrf_exempt
+def obtener_productosCel(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_discoteca = data.get('id_discoteca')
+            # Verificar si se proporcionó un ID de discoteca en el cuerpo de la petición
+            if id_discoteca is None:
+                return JsonResponse({'error': 'Se requiere proporcionar un ID de discoteca en el cuerpo de la petición'}, status=400)
+            
+            # Buscar la discoteca por su ID en la base de datos
+            registros = Productos.objects.filter(idEstablecimiento = id_discoteca)
+            
+            registros_json = []
+
+            for registro in registros:
+                registro_dict = {
+                    'id': registro.id,
+                    'nombre': registro.nombre,
+                    'precio':registro.precio,
+                    'categoria': registro.categoria,
+                    'imagen': registro.urlImagen
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
+
+
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def obtener_productosPc(request):
+    if request.method == 'GET':
+        try:
+            authorization_header = request.headers.get('Authorization')
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+            # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+            id_usuario = obtenerIdUser(token)
+            id_discoteca = obtener_establecimiento_de_usuario_por_id(id_usuario)
+            
+            # Verificar si se proporcionó un ID de discoteca en el cuerpo de la petición
+            if id_discoteca is None:
+                return JsonResponse({'error': 'El usuario no tiene un establecimeinto relacionado'}, status=400)
+            
+            # Buscar la discoteca por su ID en la base de datos
+            registros = Productos.objects.filter(idEstablecimiento = id_discoteca)
+            
+            registros_json = []
+
+            for registro in registros:
+                registro_dict = {
+                    'id': registro.id,
+                    'nombre': registro.nombre,
+                    'precio':registro.precio,
+                    'categoria': registro.categoria,
+                    'imagen': registro.urlImagen
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
+
+
+
+'''----------------------------------------------------------------------------------'''
+'''----------------------------------------------------------------------------------'''
+'''-------------------------------------funciones------------------------------------'''
+'''----------------------------------------------------------------------------------'''
 
 def obtenerIdUser(token):
 
@@ -854,3 +1018,14 @@ def obtener_numero_likes_establecimiento(id_establecimiento):
     except MegustaEventos.DoesNotExist:
         # Manejar el caso en que no se encuentre el usuario
         return 0
+def obtener_email_establecimiento(id_establecimiento):
+    try:
+        # Buscar el usuario por su ID
+        User = get_user_model()
+        usuario = User.objects.get(idEstablecimiento=id_establecimiento)
+        # Obtener el nombre del usuario
+        username = usuario.username
+        return username
+    except User.DoesNotExist:
+        # Manejar el caso en que no se encuentre el usuario
+        return None

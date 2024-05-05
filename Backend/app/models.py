@@ -98,7 +98,7 @@ class Productos(models.Model):
     nombre = models.CharField(max_length=45)
     precio = models.CharField(max_length=45)
     categoria = models.CharField(max_length=45)
-    urlImagen = models.CharField(max_length=45)
+    urlImagen = models.TextField()
 
     def __str__(self):
         return f"{self.id}"

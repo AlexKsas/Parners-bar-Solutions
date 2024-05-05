@@ -44,6 +44,10 @@ urlpatterns = [
     path('crearestablecimientos/',views.crear_discoteca),
     path('eventsbyestablecimiento/',views.obtener_registros_eventos_por_establecimiento),
     path('updateevent/',views.actualizar_evento),
+    path('createproduct/',views.crear_producto),
+    path('deleteproduct/',views.eliminar_producto),
+    path('obtenerproductoscel/',views.obtener_productosCel),
+    path('obtenerproductospc/',views.obtener_productosPc),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Verificar token
