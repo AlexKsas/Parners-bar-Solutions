@@ -48,6 +48,12 @@ urlpatterns = [
     path('deleteproduct/',views.eliminar_producto),
     path('obtenerproductoscel/',views.obtener_productosCel),
     path('obtenerproductospc/',views.obtener_productosPc),
+    path('createasistencia/',views.crear_asistencia),
+    path('deleteasistencia/',views.eliminar_asistencia),
+    path('obtenerasistencia/',views.obtener_asistencia),
+    path('createlistacancion/',views.crear_listado),
+    path('updatelistacancion/',views.actualizar_listado),
+    path('obtenerlistacancion/',views.obtener_lista),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Obtener token de acceso
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Renovar token de acceso
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Verificar token

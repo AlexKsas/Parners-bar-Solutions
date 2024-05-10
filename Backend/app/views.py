@@ -12,6 +12,8 @@ from .models import MegustaEventos
 from .models import MegustaEstablecimiento
 from .models import Comentarios
 from .models import Productos
+from .models import Asistencia
+from .models import ListadoCanciones
 import json
 from django.http import JsonResponse
 from pymongo import MongoClient
@@ -955,6 +957,218 @@ def obtener_productosPc(request):
         return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
 
 
+
+
+
+'''-----------------------------------asistencia-------------------------------------'''
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_asistencia(request):
+    if request.method == 'POST':
+        try:
+            authorization_header = request.headers.get('Authorization')
+            # Separar el tipo de esquema de autenticación y el token
+            _, token = authorization_header.split(None, 1)
+            # Eliminar el prefijo 'Bearer ' si está presente en el token
+            token = token.replace('Bearer ', '')
+    
+            id_usuario = obtenerIdUser(token)
+            data = json.loads(request.body)
+            idevent = data.get('idEvento')
+            fechaingres = data.get('fechaIngreso')
+            
+            # Crear un nuevo evento
+            nueva_asistencia = Asistencia.objects.create(
+                idUsuario=id_usuario,
+                idEvento=idevent,
+                fechaIngreso=fechaingres
+            )
+            
+            # Retornar el ID del evento creado
+            return JsonResponse({'id': nueva_asistencia.id})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def eliminar_asistencia(request):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                # Separar el tipo de esquema de autenticación y el token
+                _, token = authorization_header.split(None, 1)
+                # Eliminar el prefijo 'Bearer ' si está presente en el token
+                token = token.replace('Bearer ', '')
+                # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+                id_usuario = obtenerIdUser(token)
+                
+                id_asistencia = data.get('id')
+                
+                # Verificar si el producto pertenece al establecimiento del usuario
+                registro = Asistencia.objects.get(id=id_asistencia)
+
+                
+                if str(registro.idUsuario) == str(id_usuario):
+                    registro.delete()
+                    return JsonResponse({'mensaje': 'Asistencia eliminado correctamente'})
+                else:
+                    return JsonResponse({'error': 'El usuario no puede eliminar este registro por que no le pertenece'}, status=400)
+            else:
+                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+        except Asistencia.DoesNotExist:
+            return JsonResponse({'error': 'El registro con es id no existe'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)},status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+    
+
+
+@csrf_exempt
+def obtener_asistencia(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            idEvent = data.get('idEvento')
+            registros = Asistencia.objects.filter(idEvento = idEvent)
+            
+            registros_json = []
+
+            for registro in registros:
+                registro_dict = {
+                    'id': registro.id,
+                    'idEvento': registro.idEvento,
+                    'idUsuario':registro.idUsuario,
+                    'nombreUsuario': obtener_nombre_de_usuario_por_id(registro.idUsuario),
+                    'fechaIngreso': registro.fechaIngreso
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
+
+
+'''-----------------------------------ListadoCanciones-------------------------------------'''
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_listado(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            idevent = data.get('idEvento')
+            idasis = data.get('idAsistencia')
+            nombrecancio = data.get('nombreCancion')
+            artist = data.get('artista')
+            albu = data.get('albun')
+            duracio = data.get('duracion')
+            linkFotoCancio = data.get('linkFotoCancion')
+            fechaSolicitad = data.get('fechaSolicitada')
+            estadoCancio = data.get('estadoCancion')
+            linkReproducto = data.get('linkReproductor')
+
+            
+            # Crear un nuevo evento
+            nueva_lista = ListadoCanciones.objects.create(
+                idEvento=idevent,
+                idAsistencia=idasis,
+                nombreCancion=nombrecancio,
+                artista=artist,
+                albun=albu,
+                duracion=duracio,
+                linkFotoCancion=linkFotoCancio,
+                fechaSolicitada=fechaSolicitad,
+                estadoCancion=estadoCancio,
+                linkReproductor=linkReproducto
+            )
+            
+            # Retornar el ID del evento creado
+            return JsonResponse({'id': nueva_lista.id})
+        
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+    
+@csrf_exempt
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def actualizar_listado(request):
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                # Separar el tipo de esquema de autenticación y el token
+                _, token = authorization_header.split(None, 1)
+                # Eliminar el prefijo 'Bearer ' si está presente en el token
+                token = token.replace('Bearer ', '')
+                # Ahora el token contiene solo el token sin el prefijo 'Bearer'
+                id_usuario = obtenerIdUser(token)
+                
+                id_lista = data.get('idLista')
+                estadoCancio = data.get('estadoCancion')
+                
+                # Verificar si el producto pertenece al establecimiento del usuario
+                registro = ListadoCanciones.objects.get(id=id_lista)
+                registro.estadoCancion = estadoCancio
+                registro.save()
+                return JsonResponse({'mensaje': 'Se actualizo correctamente'})
+            else:
+                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+        except ListadoCanciones.DoesNotExist:
+            return JsonResponse({'error': 'El registro con es id no existe'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)},status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'})
+    
+
+
+
+@csrf_exempt
+def obtener_lista(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            idEvent = data.get('idEvento')
+            registros = ListadoCanciones.objects.filter(idEvento = idEvent)
+            
+            registros_json = []
+
+            for registro in registros:
+                registro_dict = {
+                    'id': registro.id,
+                    'idEvento': registro.idEvento,
+                    'idAsistencia':registro.idAsistencia,
+                    'nombreCancion':registro.nombreCancion,
+                    'artista':registro.artista,
+                    'albun':registro.albun,
+                    'duracion':registro.duracion,
+                    'linkFotoCancion':registro.linkFotoCancion,
+                    'fechaSolicitada':registro.fechaSolicitada,
+                    'estadoCancion':registro.estadoCancion,
+                    'estadoCancion':registro.estadoCancion
+                }
+                registros_json.append(registro_dict)
+
+            return JsonResponse({'registros': registros_json})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
 
 '''----------------------------------------------------------------------------------'''
 '''----------------------------------------------------------------------------------'''
