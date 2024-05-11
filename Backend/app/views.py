@@ -201,7 +201,7 @@ def crear_discoteca(request):
 
             # Validate required fields
             if not id or not Nombre or not latitud or not longitud or not Horario or not Imagen or not Telefono or not username or not password or not cedula or not celular or not tipoIdentificacion or not first_name or not last_name:
-                return JsonResponse({'error': 'faltan campos requeridos'})
+                return JsonResponse({'error': 'faltan campos requeridos'}, status=400)
             
             user, created = User.objects.get_or_create(username=username)
             if created:
@@ -501,7 +501,7 @@ def crear_evento(request):
             return JsonResponse({'error': str(e)})
 
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 
 @csrf_exempt
@@ -522,7 +522,7 @@ def actualizar_evento(request):
             evento_a_actualizar = eventos.objects.get(id=id_evento)
 
             if evento_a_actualizar.idEstablecimiento != idEstablecimiento:
-                return JsonResponse({'error': 'Usuario no esta relacionado al establecimiento del evento'}, status=405)
+                return JsonResponse({'error': 'Usuario no esta relacionado al establecimiento del evento'}, status=400)
 
 
             data = json.loads(request.body)
@@ -534,12 +534,12 @@ def actualizar_evento(request):
 
             return JsonResponse({'mensaje': 'Evento actualizado correctamente'})
         except eventos.DoesNotExist:
-            return JsonResponse({'error': 'No se encontró evento relacionado al usuario que envia token'}, status=404)
+            return JsonResponse({'error': 'No se encontró evento relacionado al usuario que envia token'}, status=400)
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
 
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'}, status=400)
 
 @csrf_exempt
 @api_view(['POST'])
@@ -649,9 +649,9 @@ def crear_comentario_evento(request):
         
         except Exception as e:
             print('e')
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 @csrf_exempt
 @api_view(['DELETE'])
@@ -674,9 +674,9 @@ def eliminar_megusta_evento(request):
 
             return JsonResponse({'mensaje': 'Me gusta evento eliminado correctamente'})
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'}, status=400)
     
 @csrf_exempt
 @api_view(['DELETE'])
@@ -708,9 +708,9 @@ def eliminar_comentario_evento(request):
 
             return JsonResponse({'mensaje': 'comentario evento eliminado correctamente'})
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'}, status=400)
     
 @csrf_exempt
 @api_view(['POST'])
@@ -736,9 +736,9 @@ def obtener_megusta_evento(request):
 
             return JsonResponse({'registros': registros_json})
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 @csrf_exempt
 @api_view(['POST'])
@@ -764,9 +764,9 @@ def obtener_megusta_establecimiento(request):
 
             return JsonResponse({'registros': registros_json})
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 @csrf_exempt
 @api_view(['POST'])
@@ -793,9 +793,9 @@ def obtener_comentarios_evento(request):
 
             return JsonResponse({'registros': registros_json})
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 
 '''------------------------------@productos-----------------------------------'''
@@ -838,9 +838,9 @@ def crear_producto(request):
         
         except Exception as e:
             print('e')
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 
 
@@ -874,13 +874,13 @@ def eliminar_producto(request):
                 else:
                     return JsonResponse({'error': 'El usuario no puede eliminar este producto, no pertenece al establecimiento'}, status=400)
             else:
-                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+                return JsonResponse({'error': 'Se requiere un token de autenticación'}, status=400)
         except Productos.DoesNotExist:
-            return JsonResponse({'error': 'El producto no existe'})
+            return JsonResponse({'error': 'El producto no existe'}, status=400)
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'}, status=400)
     
 
 
@@ -989,10 +989,10 @@ def crear_asistencia(request):
             return JsonResponse({'id': nueva_asistencia.id})
         
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
 
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 @csrf_exempt
 @api_view(['DELETE'])
@@ -1022,13 +1022,13 @@ def eliminar_asistencia(request):
                 else:
                     return JsonResponse({'error': 'El usuario no puede eliminar este registro por que no le pertenece'}, status=400)
             else:
-                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+                return JsonResponse({'error': 'Se requiere un token de autenticación'}, status=400)
         except Asistencia.DoesNotExist:
-            return JsonResponse({'error': 'El registro con es id no existe'})
+            return JsonResponse({'error': 'El registro con es id no existe'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)},status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones DELETE'}, status=400)
     
 
 
@@ -1097,10 +1097,10 @@ def crear_listado(request):
             return JsonResponse({'id': nueva_lista.id})
         
         except Exception as e:
-            return JsonResponse({'error': str(e)})
+            return JsonResponse({'error': str(e)}, status=400)
 
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones POST'}, status=400)
     
 @csrf_exempt
 @api_view(['PUT'])
@@ -1125,15 +1125,15 @@ def actualizar_listado(request):
                 registro = ListadoCanciones.objects.get(id=id_lista)
                 registro.estadoCancion = estadoCancio
                 registro.save()
-                return JsonResponse({'mensaje': 'Se actualizo correctamente'})
+                return JsonResponse({'mensaje': 'Se actualizo correctamente'}, status=400)
             else:
-                return JsonResponse({'error': 'Se requiere un token de autenticación'})
+                return JsonResponse({'error': 'Se requiere un token de autenticación'}, status=400)
         except ListadoCanciones.DoesNotExist:
-            return JsonResponse({'error': 'El registro con es id no existe'})
+            return JsonResponse({'error': 'El registro con es id no existe'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)},status=400)
     else:
-        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'})
+        return JsonResponse({'error': 'Este endpoint solo acepta peticiones PUT'}, status=400)
     
 
 
